@@ -12,7 +12,7 @@ function validate(file) {
 }
 function updateReview() {
   const ready = assets.customer && assets.top && assets.bottom;
-  setText("review-text", ready ? "All images are ready. Add optional profile details, then generate a preview." : "Add all three images to start the preview.");
+  setText("review-text", ready ? "All images are ready. Generate a browser overlay. Transparent PNG garments work best." : "Add all three images to start the preview.");
   document.querySelector(".steps li:nth-child(1)").classList.toggle("active", !ready);
 }
 function showAsset(key, file) {
@@ -37,6 +37,51 @@ function removeAsset(key) {
   document.querySelector(`[data-input="${key}"]`).value = "";
   updateReview();
 }
+function loadImage(url) {
+  return new Promise((resolve, reject) => {
+    const image = new Image();
+    image.onload = () => resolve(image);
+    image.onerror = reject;
+    image.src = url;
+  });
+}
+function drawContained(context, image, width, height) {
+  const scale = Math.min(width / image.naturalWidth, height / image.naturalHeight);
+  const drawWidth = image.naturalWidth * scale;
+  const drawHeight = image.naturalHeight * scale;
+  const x = (width - drawWidth) / 2;
+  const y = (height - drawHeight) / 2;
+  context.drawImage(image, x, y, drawWidth, drawHeight);
+}
+async function drawTryOn() {
+  if (!assets.customer || !assets.top || !assets.bottom) return;
+  const canvas = document.getElementById("tryon-canvas");
+  const context = canvas.getContext("2d");
+  const width = canvas.width;
+  const height = canvas.height;
+  const [customer, top, bottom] = await Promise.all([
+    loadImage(assets.customer.url),
+    loadImage(assets.top.url),
+    loadImage(assets.bottom.url),
+  ]);
+  context.clearRect(0, 0, width, height);
+  context.fillStyle = "#f1f2f4";
+  context.fillRect(0, 0, width, height);
+  drawContained(context, customer, width, height);
+
+  const topScale = Number(document.getElementById("top-scale").value) / 100;
+  const topY = Number(document.getElementById("top-y").value);
+  const bottomScale = Number(document.getElementById("bottom-scale").value) / 100;
+  const bottomY = Number(document.getElementById("bottom-y").value);
+
+  const topWidth = width * 0.48 * topScale;
+  const topHeight = top.naturalHeight * (topWidth / top.naturalWidth);
+  context.drawImage(top, (width - topWidth) / 2, height * 0.22 + topY, topWidth, topHeight);
+
+  const bottomWidth = width * 0.39 * bottomScale;
+  const bottomHeight = bottom.naturalHeight * (bottomWidth / bottom.naturalWidth);
+  context.drawImage(bottom, (width - bottomWidth) / 2, height * 0.49 + bottomY, bottomWidth, bottomHeight);
+}
 
 ["customer", "top", "bottom"].forEach((key) => {
   const input = document.querySelector(`[data-input="${key}"]`);
@@ -49,33 +94,51 @@ function removeAsset(key) {
   zone.addEventListener("drop", (event) => event.dataTransfer.files[0] && showAsset(key, event.dataTransfer.files[0]));
 });
 
+["top-scale", "top-y", "bottom-scale", "bottom-y"].forEach((id) => {
+  document.getElementById(id).addEventListener("input", () => drawTryOn());
+});
+
 document.getElementById("generate-button").addEventListener("click", () => {
   if (!assets.customer || !assets.top || !assets.bottom) { alert("Please add your customer, shirt, and pants images first."); return; }
   clearTimers();
   document.getElementById("status-panel").hidden = false;
   document.getElementById("result-panel").hidden = true;
   document.getElementById("generate-button").disabled = true;
-  const phases = [[20, "Preparing a secure local preview..."], [45, "Balancing lighting and image tone..."], [70, "Matching garment proportions to your profile..."], [92, "Finalizing your mock try-on..."], [100, "Preview ready."]];
+  const phases = [[20, "Preparing a secure local canvas..."], [45, "Loading your customer photo..."], [70, "Placing the shirt and pants overlays..."], [92, "Finalizing the browser preview..."], [100, "Overlay preview ready."]];
   phases.forEach(([progress, message], index) => {
     timers.push(setTimeout(() => { document.getElementById("progress-bar").style.width = `${progress}%`; setText("progress-label", `${progress}% complete`); setText("status-text", message); }, index * 850));
   });
-  timers.push(setTimeout(() => {
-    document.getElementById("status-panel").hidden = true;
-    document.getElementById("result-panel").hidden = false;
-    document.getElementById("generate-button").disabled = false;
-    const resultImage = document.getElementById("result-image");
-    resultImage.src = assets.customer.url; resultImage.hidden = false;
-    document.getElementById("result-placeholder").hidden = true;
-    setText("waist-insight", document.getElementById("fit").value || "Balanced contour");
-    document.querySelectorAll(".steps li").forEach((step) => step.classList.remove("active"));
-    document.querySelector(".steps li:nth-child(4)").classList.add("active");
+  timers.push(setTimeout(async () => {
+    try {
+      await drawTryOn();
+      document.getElementById("status-panel").hidden = true;
+      document.getElementById("result-panel").hidden = false;
+      document.getElementById("generate-button").disabled = false;
+      document.getElementById("result-placeholder").hidden = true;
+      setText("waist-insight", document.getElementById("fit").value || "Balanced contour");
+      document.querySelectorAll(".steps li").forEach((step) => step.classList.remove("active"));
+      document.querySelector(".steps li:nth-child(4)").classList.add("active");
+    } catch (error) {
+      alert("The browser could not compose these images. Try PNG garment images with transparent backgrounds.");
+      document.getElementById("status-panel").hidden = true;
+      document.getElementById("generate-button").disabled = false;
+    }
   }, 4000));
+});
+
+document.getElementById("download-button").addEventListener("click", () => {
+  const link = document.createElement("a");
+  link.download = "fashion-agent-overlay.png";
+  link.href = document.getElementById("tryon-canvas").toDataURL("image/png");
+  link.click();
 });
 
 document.getElementById("reset-button").addEventListener("click", () => {
   clearTimers();
   ["customer", "top", "bottom"].forEach(removeAsset);
   ["height", "weight", "size", "shape", "fit"].forEach((id) => { document.getElementById(id).value = ""; });
+  ["top-scale", "bottom-scale"].forEach((id) => { document.getElementById(id).value = "100"; });
+  ["top-y", "bottom-y"].forEach((id) => { document.getElementById(id).value = "0"; });
   document.getElementById("status-panel").hidden = true;
   document.getElementById("result-panel").hidden = true;
   document.getElementById("progress-bar").style.width = "0%";
