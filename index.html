@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Private virtual try-on fashion studio" />
+    <title>Fashion Agent | Virtual Try-On Studio</title>
+    <link rel="stylesheet" href="style.css" />
+    <script src="script.js" defer></script>
+  </head>
+  <body>
+    <main class="page-shell">
+      <header class="hero">
+        <div class="eyebrow">FASHION AGENT</div>
+        <h1>Private virtual try-on studio.</h1>
+        <p>Upload your photo, shirt, and pants to preview the outfit in a simple browser-only demo.</p>
+      </header>
+
+      <section class="privacy-card">
+        <strong>Private by design</strong>
+        <span>Your images stay in this browser. This demo does not upload them to a server.</span>
+      </section>
+
+      <ol class="steps" aria-label="Try-on progress">
+        <li class="active"><span>1</span> Upload</li>
+        <li><span>2</span> Profile</li>
+        <li><span>3</span> Review</li>
+        <li><span>4</span> Preview</li>
+      </ol>
+
+      <section class="upload-grid" aria-label="Image uploads">
+        <article class="upload-card">
+          <div class="card-heading"><div><h2>Customer photo</h2><p>Front-facing photo</p></div><button class="remove-button" data-remove="customer" hidden>Remove</button></div>
+          <label class="drop-zone" data-dropzone="customer" for="customer-input">
+            <img class="preview" data-preview="customer" alt="Customer photo preview" hidden />
+            <span class="drop-copy" data-copy="customer"><strong>Drop image here</strong><small>JPG, PNG, or WEBP · up to 10MB</small></span>
+          </label>
+          <input id="customer-input" data-input="customer" type="file" accept="image/png,image/jpeg,image/webp" capture="user" />
+          <button class="secondary-button camera-button" data-camera="customer">Capture photo</button>
+        </article>
+
+        <article class="upload-card">
+          <div class="card-heading"><div><h2>Shirt / top</h2><p>Product or flat-lay image</p></div><button class="remove-button" data-remove="top" hidden>Remove</button></div>
+          <label class="drop-zone" data-dropzone="top" for="top-input">
+            <img class="preview" data-preview="top" alt="Shirt preview" hidden />
+            <span class="drop-copy" data-copy="top"><strong>Drop image here</strong><small>JPG, PNG, or WEBP · up to 10MB</small></span>
+          </label>
+          <input id="top-input" data-input="top" type="file" accept="image/png,image/jpeg,image/webp" capture="environment" />
+          <button class="secondary-button camera-button" data-camera="top">Choose shirt</button>
+        </article>
+
+        <article class="upload-card">
+          <div class="card-heading"><div><h2>Pants / bottom</h2><p>Product or flat-lay image</p></div><button class="remove-button" data-remove="bottom" hidden>Remove</button></div>
+          <label class="drop-zone" data-dropzone="bottom" for="bottom-input">
+            <img class="preview" data-preview="bottom" alt="Pants preview" hidden />
+            <span class="drop-copy" data-copy="bottom"><strong>Drop image here</strong><small>JPG, PNG, or WEBP · up to 10MB</small></span>
+          </label>
+          <input id="bottom-input" data-input="bottom" type="file" accept="image/png,image/jpeg,image/webp" capture="environment" />
+          <button class="secondary-button camera-button" data-camera="bottom">Choose pants</button>
+        </article>
+      </section>
+
+      <section class="panel">
+        <h2>Profile details <span>(optional)</span></h2>
+        <div class="profile-grid">
+          <label>Height<input id="height" placeholder="e.g. 172 cm" /></label>
+          <label>Weight<input id="weight" placeholder="e.g. 68 kg" /></label>
+          <label>Usual size<input id="size" placeholder="e.g. M / 32" /></label>
+          <label>Body shape<input id="shape" placeholder="e.g. Athletic" /></label>
+          <label>Fit preference<input id="fit" placeholder="e.g. Relaxed" /></label>
+        </div>
+      </section>
+
+      <section class="panel review-panel">
+        <div><h2>Review your inputs</h2><p id="review-text">Add all three images to start the preview.</p></div>
+        <div class="actions"><button id="generate-button" class="primary-button">Generate preview</button><button id="reset-button" class="secondary-button">Reset session</button></div>
+      </section>
+
+      <section id="status-panel" class="panel status-panel" hidden aria-live="polite">
+        <h2>Creating your preview</h2><p id="status-text">Preparing a secure local preview...</p><div class="progress-track"><div id="progress-bar"></div></div><small id="progress-label">0% complete</small>
+      </section>
+
+      <section id="result-panel" class="panel result-panel" hidden>
+        <div><h2>Your mock try-on preview</h2><p>This browser-only demo shows your customer image as a preview placeholder. Connect an AI provider for real garment compositing.</p></div>
+        <div class="result-preview"><img id="result-image" alt="Customer try-on preview" hidden /><span id="result-placeholder">AI try-on output placeholder</span></div>
+        <div class="insights"><div><small>Shoulders</small><strong>Natural alignment</strong></div><div><small>Waist</small><strong id="waist-insight">Balanced contour</strong></div><div><small>Length</small><strong>Proportions look balanced</strong></div><div><small>Overall fit</small><strong>Ready for a real AI fitting model</strong></div></div>
+      </section>
+    </main>
+  </body>
+</html>
