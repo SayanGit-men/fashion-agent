@@ -16,82 +16,25 @@
         <p>Upload your photo, shirt, and pants to create a browser-only outfit overlay preview.</p>
       </header>
 
-      <section class="privacy-card">
-        <strong>Private by design</strong>
-        <span>Your images stay in this browser. This basic overlay does not upload them to a server.</span>
-      </section>
+      <section class="privacy-card"><strong>Private by design</strong><span>Your images stay in this browser. This basic overlay does not upload them to a server.</span></section>
 
-      <ol class="steps" aria-label="Try-on progress">
-        <li class="active"><span>1</span> Upload</li>
-        <li><span>2</span> Profile</li>
-        <li><span>3</span> Review</li>
-        <li><span>4</span> Preview</li>
-      </ol>
+      <ol class="steps" aria-label="Try-on progress"><li class="active"><span>1</span> Upload</li><li><span>2</span> Profile</li><li><span>3</span> Review</li><li><span>4</span> Preview</li></ol>
 
       <section class="upload-grid" aria-label="Image uploads">
-        <article class="upload-card">
-          <div class="card-heading"><div><h2>Customer photo</h2><p>Front-facing full-body photo works best</p></div><button class="remove-button" data-remove="customer" hidden>Remove</button></div>
-          <label class="drop-zone" data-dropzone="customer" for="customer-input">
-            <img class="preview" data-preview="customer" alt="Customer photo preview" hidden />
-            <span class="drop-copy" data-copy="customer"><strong>Drop image here</strong><small>JPG, PNG, or WEBP · up to 10MB</small></span>
-          </label>
-          <input id="customer-input" data-input="customer" type="file" accept="image/png,image/jpeg,image/webp" capture="user" />
-          <button class="secondary-button camera-button" data-camera="customer">Capture photo</button>
-        </article>
-
-        <article class="upload-card">
-          <div class="card-heading"><div><h2>Shirt / top</h2><p>Use a transparent PNG for best results</p></div><button class="remove-button" data-remove="top" hidden>Remove</button></div>
-          <label class="drop-zone" data-dropzone="top" for="top-input">
-            <img class="preview" data-preview="top" alt="Shirt preview" hidden />
-            <span class="drop-copy" data-copy="top"><strong>Drop image here</strong><small>Transparent PNG recommended</small></span>
-          </label>
-          <input id="top-input" data-input="top" type="file" accept="image/png,image/jpeg,image/webp" capture="environment" />
-          <button class="secondary-button camera-button" data-camera="top">Choose shirt</button>
-        </article>
-
-        <article class="upload-card">
-          <div class="card-heading"><div><h2>Pants / bottom</h2><p>Use a transparent PNG for best results</p></div><button class="remove-button" data-remove="bottom" hidden>Remove</button></div>
-          <label class="drop-zone" data-dropzone="bottom" for="bottom-input">
-            <img class="preview" data-preview="bottom" alt="Pants preview" hidden />
-            <span class="drop-copy" data-copy="bottom"><strong>Drop image here</strong><small>Transparent PNG recommended</small></span>
-          </label>
-          <input id="bottom-input" data-input="bottom" type="file" accept="image/png,image/jpeg,image/webp" capture="environment" />
-          <button class="secondary-button camera-button" data-camera="bottom">Choose pants</button>
-        </article>
+        <article class="upload-card"><div class="card-heading"><div><h2>Customer photo</h2><p>Front-facing full-body photo works best</p></div><button class="remove-button" data-remove="customer" hidden>Remove</button></div><label class="drop-zone" data-dropzone="customer" for="customer-input"><img class="preview" data-preview="customer" alt="Customer photo preview" hidden /><span class="drop-copy" data-copy="customer"><strong>Drop image here</strong><small>JPG, PNG, or WEBP · up to 10MB</small></span></label><input id="customer-input" data-input="customer" type="file" accept="image/png,image/jpeg,image/webp" capture="user" /><button class="secondary-button camera-button" data-camera="customer">Capture photo</button></article>
+        <article class="upload-card"><div class="card-heading"><div><h2>Shirt / top</h2><p>Transparent PNG recommended</p></div><button class="remove-button" data-remove="top" hidden>Remove</button></div><label class="drop-zone" data-dropzone="top" for="top-input"><img class="preview" data-preview="top" alt="Shirt preview" hidden /><span class="drop-copy" data-copy="top"><strong>Drop image here</strong><small>Transparent PNG works best</small></span></label><input id="top-input" data-input="top" type="file" accept="image/png,image/jpeg,image/webp" capture="environment" /><button class="secondary-button camera-button" data-camera="top">Choose shirt</button></article>
+        <article class="upload-card"><div class="card-heading"><div><h2>Pants / bottom</h2><p>Transparent PNG recommended</p></div><button class="remove-button" data-remove="bottom" hidden>Remove</button></div><label class="drop-zone" data-dropzone="bottom" for="bottom-input"><img class="preview" data-preview="bottom" alt="Pants preview" hidden /><span class="drop-copy" data-copy="bottom"><strong>Drop image here</strong><small>Transparent PNG works best</small></span></label><input id="bottom-input" data-input="bottom" type="file" accept="image/png,image/jpeg,image/webp" capture="environment" /><button class="secondary-button camera-button" data-camera="bottom">Choose pants</button></article>
       </section>
 
-      <section class="panel">
-        <h2>Profile details <span>(optional)</span></h2>
-        <div class="profile-grid">
-          <label>Height<input id="height" placeholder="e.g. 172 cm" /></label>
-          <label>Weight<input id="weight" placeholder="e.g. 68 kg" /></label>
-          <label>Usual size<input id="size" placeholder="e.g. M / 32" /></label>
-          <label>Body shape<input id="shape" placeholder="e.g. Athletic" /></label>
-          <label>Fit preference<input id="fit" placeholder="e.g. Relaxed" /></label>
-        </div>
-      </section>
+      <section class="panel"><h2>Profile and body measurements <span>(optional)</span></h2><p>Measurements help you position and size the basic garment overlay. They do not create an AI body scan.</p><div class="profile-grid">
+        <label>Height<input id="height" placeholder="e.g. 172 cm" /></label><label>Weight<input id="weight" placeholder="e.g. 68 kg" /></label><label>Usual size<input id="size" placeholder="e.g. M / 32" /></label><label>Body shape<input id="shape" placeholder="e.g. Athletic" /></label><label>Fit preference<input id="fit" placeholder="e.g. Relaxed" /></label><label>Chest / bust<input id="chest" placeholder="e.g. 96 cm" /></label><label>Shoulder width<input id="shoulder" placeholder="e.g. 44 cm" /></label><label>Shoulder-to-wrist<input id="shoulder-wrist" placeholder="e.g. 78 cm" /></label>
+      </div></section>
 
-      <section class="panel review-panel">
-        <div><h2>Review your inputs</h2><p id="review-text">Add all three images to start the preview.</p></div>
-        <div class="actions"><button id="generate-button" class="primary-button">Generate overlay</button><button id="reset-button" class="secondary-button">Reset session</button></div>
-      </section>
+      <section class="panel review-panel"><div><h2>Review your inputs</h2><p id="review-text">Add all three images to start the preview.</p><p id="measurement-summary" class="measurement-summary"></p></div><div class="actions"><button id="generate-button" class="primary-button">Generate overlay</button><button id="reset-button" class="secondary-button">Reset session</button></div></section>
 
-      <section id="status-panel" class="panel status-panel" hidden aria-live="polite">
-        <h2>Creating your overlay</h2><p id="status-text">Preparing your local canvas...</p><div class="progress-track"><div id="progress-bar"></div></div><small id="progress-label">0% complete</small>
-      </section>
+      <section id="status-panel" class="panel status-panel" hidden aria-live="polite"><h2>Creating your overlay</h2><p id="status-text">Preparing your local canvas...</p><div class="progress-track"><div id="progress-bar"></div></div><small id="progress-label">0% complete</small></section>
 
-      <section id="result-panel" class="panel result-panel" hidden>
-        <div><h2>Your outfit overlay preview</h2><p>This is a basic canvas composition, not a body-aware AI fitting result. Transparent garment images produce the cleanest result.</p></div>
-        <div class="result-preview"><canvas id="tryon-canvas" width="720" height="900" aria-label="Customer photo with shirt and pants overlay"></canvas><span id="result-placeholder">Your outfit preview will appear here</span></div>
-        <div class="overlay-controls" aria-label="Overlay controls">
-          <label>Shirt size<input id="top-scale" type="range" min="50" max="150" value="100" /></label>
-          <label>Shirt vertical position<input id="top-y" type="range" min="-120" max="160" value="0" /></label>
-          <label>Pants size<input id="bottom-scale" type="range" min="50" max="150" value="100" /></label>
-          <label>Pants vertical position<input id="bottom-y" type="range" min="-100" max="180" value="0" /></label>
-        </div>
-        <div class="result-actions"><button id="download-button" class="primary-button">Download preview</button><span class="helper-text">Adjust the sliders if the garment placement needs correction.</span></div>
-        <div class="insights"><div><small>Shoulders</small><strong>Approximate overlay alignment</strong></div><div><small>Waist</small><strong id="waist-insight">Balanced contour</strong></div><div><small>Length</small><strong>Adjust with the position sliders</strong></div><div><small>Overall fit</small><strong>Use transparent product images for best results</strong></div></div>
-      </section>
+      <section id="result-panel" class="panel result-panel" hidden><div><h2>Your outfit overlay preview</h2><p>This is a basic canvas composition, not a body-aware AI fitting result. Transparent garment images produce the cleanest result.</p></div><div class="result-preview"><canvas id="tryon-canvas" width="720" height="900" aria-label="Customer photo with shirt and pants overlay"></canvas><span id="result-placeholder">Your outfit preview will appear here</span></div><div class="overlay-controls" aria-label="Overlay controls"><label>Shirt size<input id="top-scale" type="range" min="50" max="150" value="100" /></label><label>Shirt vertical position<input id="top-y" type="range" min="-120" max="160" value="0" /></label><label>Pants size<input id="bottom-scale" type="range" min="50" max="150" value="100" /></label><label>Pants vertical position<input id="bottom-y" type="range" min="-100" max="180" value="0" /></label></div><div class="result-actions"><button id="download-button" class="primary-button">Download preview</button><span class="helper-text">Adjust sliders if placement needs correction.</span></div><div class="insights"><div><small>Chest</small><strong id="chest-insight">Not provided</strong></div><div><small>Shoulders</small><strong id="shoulder-insight">Not provided</strong></div><div><small>Arm length</small><strong id="arm-insight">Not provided</strong></div><div><small>Overall fit</small><strong id="fit-insight">Use transparent product images</strong></div></div></section>
     </main>
   </body>
 </html>

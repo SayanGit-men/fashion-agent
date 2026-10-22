@@ -5,144 +5,31 @@ let timers = [];
 
 function setText(id, value) { document.getElementById(id).textContent = value; }
 function clearTimers() { timers.forEach(clearTimeout); timers = []; }
-function validate(file) {
-  if (!allowedTypes.has(file.type)) return "Please choose a JPG, PNG, or WEBP image.";
-  if (file.size > MAX_SIZE) return "Please keep images under 10MB.";
-  return null;
-}
+function validate(file) { if (!allowedTypes.has(file.type)) return "Please choose a JPG, PNG, or WEBP image."; if (file.size > MAX_SIZE) return "Please keep images under 10MB."; return null; }
 function updateReview() {
   const ready = assets.customer && assets.top && assets.bottom;
   setText("review-text", ready ? "All images are ready. Generate a browser overlay. Transparent PNG garments work best." : "Add all three images to start the preview.");
+  const measurements = [["Chest", "chest"], ["Shoulders", "shoulder"], ["Shoulder-to-wrist", "shoulder-wrist"]].map(([label, id]) => `${label}: ${document.getElementById(id).value || "not provided"}`);
+  setText("measurement-summary", measurements.join(" · "));
   document.querySelector(".steps li:nth-child(1)").classList.toggle("active", !ready);
 }
-function showAsset(key, file) {
-  const error = validate(file);
-  if (error) { alert(error); return; }
-  if (assets[key]?.url) URL.revokeObjectURL(assets[key].url);
-  const url = URL.createObjectURL(file);
-  assets[key] = { file, url };
-  const image = document.querySelector(`[data-preview="${key}"]`);
-  const copy = document.querySelector(`[data-copy="${key}"]`);
-  image.src = url; image.hidden = false; copy.hidden = true;
-  document.querySelector(`[data-remove="${key}"]`).hidden = false;
-  updateReview();
-}
-function removeAsset(key) {
-  if (assets[key]?.url) URL.revokeObjectURL(assets[key].url);
-  assets[key] = null;
-  const image = document.querySelector(`[data-preview="${key}"]`);
-  image.removeAttribute("src"); image.hidden = true;
-  document.querySelector(`[data-copy="${key}"]`).hidden = false;
-  document.querySelector(`[data-remove="${key}"]`).hidden = true;
-  document.querySelector(`[data-input="${key}"]`).value = "";
-  updateReview();
-}
-function loadImage(url) {
-  return new Promise((resolve, reject) => {
-    const image = new Image();
-    image.onload = () => resolve(image);
-    image.onerror = reject;
-    image.src = url;
-  });
-}
-function drawContained(context, image, width, height) {
-  const scale = Math.min(width / image.naturalWidth, height / image.naturalHeight);
-  const drawWidth = image.naturalWidth * scale;
-  const drawHeight = image.naturalHeight * scale;
-  const x = (width - drawWidth) / 2;
-  const y = (height - drawHeight) / 2;
-  context.drawImage(image, x, y, drawWidth, drawHeight);
-}
+function showAsset(key, file) { const error = validate(file); if (error) { alert(error); return; } if (assets[key]?.url) URL.revokeObjectURL(assets[key].url); const url = URL.createObjectURL(file); assets[key] = { file, url }; const image = document.querySelector(`[data-preview="${key}"]`); image.src = url; image.hidden = false; document.querySelector(`[data-copy="${key}"]`).hidden = true; document.querySelector(`[data-remove="${key}"]`).hidden = false; updateReview(); }
+function removeAsset(key) { if (assets[key]?.url) URL.revokeObjectURL(assets[key].url); assets[key] = null; const image = document.querySelector(`[data-preview="${key}"]`); image.removeAttribute("src"); image.hidden = true; document.querySelector(`[data-copy="${key}"]`).hidden = false; document.querySelector(`[data-remove="${key}"]`).hidden = true; document.querySelector(`[data-input="${key}"]`).value = ""; updateReview(); }
+function loadImage(url) { return new Promise((resolve, reject) => { const image = new Image(); image.onload = () => resolve(image); image.onerror = reject; image.src = url; }); }
+function drawContained(context, image, width, height) { const scale = Math.min(width / image.naturalWidth, height / image.naturalHeight); const drawWidth = image.naturalWidth * scale; const drawHeight = image.naturalHeight * scale; context.drawImage(image, (width - drawWidth) / 2, (height - drawHeight) / 2, drawWidth, drawHeight); }
 async function drawTryOn() {
   if (!assets.customer || !assets.top || !assets.bottom) return;
-  const canvas = document.getElementById("tryon-canvas");
-  const context = canvas.getContext("2d");
-  const width = canvas.width;
-  const height = canvas.height;
-  const [customer, top, bottom] = await Promise.all([
-    loadImage(assets.customer.url),
-    loadImage(assets.top.url),
-    loadImage(assets.bottom.url),
-  ]);
-  context.clearRect(0, 0, width, height);
-  context.fillStyle = "#f1f2f4";
-  context.fillRect(0, 0, width, height);
-  drawContained(context, customer, width, height);
-
-  const topScale = Number(document.getElementById("top-scale").value) / 100;
-  const topY = Number(document.getElementById("top-y").value);
-  const bottomScale = Number(document.getElementById("bottom-scale").value) / 100;
-  const bottomY = Number(document.getElementById("bottom-y").value);
-
-  const topWidth = width * 0.48 * topScale;
-  const topHeight = top.naturalHeight * (topWidth / top.naturalWidth);
-  context.drawImage(top, (width - topWidth) / 2, height * 0.22 + topY, topWidth, topHeight);
-
-  const bottomWidth = width * 0.39 * bottomScale;
-  const bottomHeight = bottom.naturalHeight * (bottomWidth / bottom.naturalWidth);
-  context.drawImage(bottom, (width - bottomWidth) / 2, height * 0.49 + bottomY, bottomWidth, bottomHeight);
+  const canvas = document.getElementById("tryon-canvas"); const context = canvas.getContext("2d"); const width = canvas.width; const height = canvas.height;
+  const [customer, top, bottom] = await Promise.all([loadImage(assets.customer.url), loadImage(assets.top.url), loadImage(assets.bottom.url)]);
+  context.clearRect(0, 0, width, height); context.fillStyle = "#f1f2f4"; context.fillRect(0, 0, width, height); drawContained(context, customer, width, height);
+  const topScale = Number(document.getElementById("top-scale").value) / 100; const topY = Number(document.getElementById("top-y").value); const bottomScale = Number(document.getElementById("bottom-scale").value) / 100; const bottomY = Number(document.getElementById("bottom-y").value);
+  const topWidth = width * 0.48 * topScale; const topHeight = top.naturalHeight * (topWidth / top.naturalWidth); context.drawImage(top, (width - topWidth) / 2, height * 0.22 + topY, topWidth, topHeight);
+  const bottomWidth = width * 0.39 * bottomScale; const bottomHeight = bottom.naturalHeight * (bottomWidth / bottom.naturalWidth); context.drawImage(bottom, (width - bottomWidth) / 2, height * 0.49 + bottomY, bottomWidth, bottomHeight);
 }
-
-["customer", "top", "bottom"].forEach((key) => {
-  const input = document.querySelector(`[data-input="${key}"]`);
-  input.addEventListener("change", () => input.files[0] && showAsset(key, input.files[0]));
-  document.querySelector(`[data-camera="${key}"]`).addEventListener("click", () => input.click());
-  document.querySelector(`[data-remove="${key}"]`).addEventListener("click", () => removeAsset(key));
-  const zone = document.querySelector(`[data-dropzone="${key}"]`);
-  ["dragenter", "dragover"].forEach((eventName) => zone.addEventListener(eventName, (event) => { event.preventDefault(); zone.classList.add("dragging"); }));
-  ["dragleave", "drop"].forEach((eventName) => zone.addEventListener(eventName, (event) => { event.preventDefault(); zone.classList.remove("dragging"); }));
-  zone.addEventListener("drop", (event) => event.dataTransfer.files[0] && showAsset(key, event.dataTransfer.files[0]));
-});
-
-["top-scale", "top-y", "bottom-scale", "bottom-y"].forEach((id) => {
-  document.getElementById(id).addEventListener("input", () => drawTryOn());
-});
-
-document.getElementById("generate-button").addEventListener("click", () => {
-  if (!assets.customer || !assets.top || !assets.bottom) { alert("Please add your customer, shirt, and pants images first."); return; }
-  clearTimers();
-  document.getElementById("status-panel").hidden = false;
-  document.getElementById("result-panel").hidden = true;
-  document.getElementById("generate-button").disabled = true;
-  const phases = [[20, "Preparing a secure local canvas..."], [45, "Loading your customer photo..."], [70, "Placing the shirt and pants overlays..."], [92, "Finalizing the browser preview..."], [100, "Overlay preview ready."]];
-  phases.forEach(([progress, message], index) => {
-    timers.push(setTimeout(() => { document.getElementById("progress-bar").style.width = `${progress}%`; setText("progress-label", `${progress}% complete`); setText("status-text", message); }, index * 850));
-  });
-  timers.push(setTimeout(async () => {
-    try {
-      await drawTryOn();
-      document.getElementById("status-panel").hidden = true;
-      document.getElementById("result-panel").hidden = false;
-      document.getElementById("generate-button").disabled = false;
-      document.getElementById("result-placeholder").hidden = true;
-      setText("waist-insight", document.getElementById("fit").value || "Balanced contour");
-      document.querySelectorAll(".steps li").forEach((step) => step.classList.remove("active"));
-      document.querySelector(".steps li:nth-child(4)").classList.add("active");
-    } catch (error) {
-      alert("The browser could not compose these images. Try PNG garment images with transparent backgrounds.");
-      document.getElementById("status-panel").hidden = true;
-      document.getElementById("generate-button").disabled = false;
-    }
-  }, 4000));
-});
-
-document.getElementById("download-button").addEventListener("click", () => {
-  const link = document.createElement("a");
-  link.download = "fashion-agent-overlay.png";
-  link.href = document.getElementById("tryon-canvas").toDataURL("image/png");
-  link.click();
-});
-
-document.getElementById("reset-button").addEventListener("click", () => {
-  clearTimers();
-  ["customer", "top", "bottom"].forEach(removeAsset);
-  ["height", "weight", "size", "shape", "fit"].forEach((id) => { document.getElementById(id).value = ""; });
-  ["top-scale", "bottom-scale"].forEach((id) => { document.getElementById(id).value = "100"; });
-  ["top-y", "bottom-y"].forEach((id) => { document.getElementById(id).value = "0"; });
-  document.getElementById("status-panel").hidden = true;
-  document.getElementById("result-panel").hidden = true;
-  document.getElementById("progress-bar").style.width = "0%";
-  setText("progress-label", "0% complete");
-  document.querySelectorAll(".steps li").forEach((step) => step.classList.remove("active"));
-  document.querySelector(".steps li:nth-child(1)").classList.add("active");
-});
+["customer", "top", "bottom"].forEach((key) => { const input = document.querySelector(`[data-input="${key}"]`); input.addEventListener("change", () => input.files[0] && showAsset(key, input.files[0])); document.querySelector(`[data-camera="${key}"]`).addEventListener("click", () => input.click()); document.querySelector(`[data-remove="${key}"]`).addEventListener("click", () => removeAsset(key)); const zone = document.querySelector(`[data-dropzone="${key}"]`); ["dragenter", "dragover"].forEach((name) => zone.addEventListener(name, (event) => { event.preventDefault(); zone.classList.add("dragging"); })); ["dragleave", "drop"].forEach((name) => zone.addEventListener(name, (event) => { event.preventDefault(); zone.classList.remove("dragging"); })); zone.addEventListener("drop", (event) => event.dataTransfer.files[0] && showAsset(key, event.dataTransfer.files[0])); });
+["top-scale", "top-y", "bottom-scale", "bottom-y"].forEach((id) => document.getElementById(id).addEventListener("input", drawTryOn));
+["chest", "shoulder", "shoulder-wrist", "fit"].forEach((id) => document.getElementById(id).addEventListener("input", updateReview));
+document.getElementById("generate-button").addEventListener("click", () => { if (!assets.customer || !assets.top || !assets.bottom) { alert("Please add your customer, shirt, and pants images first."); return; } clearTimers(); document.getElementById("status-panel").hidden = false; document.getElementById("result-panel").hidden = true; document.getElementById("generate-button").disabled = true; const phases = [[20, "Preparing a secure local canvas..."], [45, "Loading your customer photo..."], [70, "Placing shirt and pants overlays..."], [92, "Finalizing the browser preview..."], [100, "Overlay preview ready."]]; phases.forEach(([progress, message], index) => timers.push(setTimeout(() => { document.getElementById("progress-bar").style.width = `${progress}%`; setText("progress-label", `${progress}% complete`); setText("status-text", message); }, index * 850))); timers.push(setTimeout(async () => { try { await drawTryOn(); document.getElementById("status-panel").hidden = true; document.getElementById("result-panel").hidden = false; document.getElementById("generate-button").disabled = false; document.getElementById("result-placeholder").hidden = true; setText("chest-insight", document.getElementById("chest").value || "Not provided"); setText("shoulder-insight", document.getElementById("shoulder").value || "Not provided"); setText("arm-insight", document.getElementById("shoulder-wrist").value || "Not provided"); setText("fit-insight", document.getElementById("fit").value || "Use transparent product images"); document.querySelectorAll(".steps li").forEach((step) => step.classList.remove("active")); document.querySelector(".steps li:nth-child(4)").classList.add("active"); } catch { alert("The browser could not compose these images. Try transparent PNG garment images."); document.getElementById("status-panel").hidden = true; document.getElementById("generate-button").disabled = false; } }, 4000)); });
+document.getElementById("download-button").addEventListener("click", () => { const link = document.createElement("a"); link.download = "fashion-agent-overlay.png"; link.href = document.getElementById("tryon-canvas").toDataURL("image/png"); link.click(); });
+document.getElementById("reset-button").addEventListener("click", () => { clearTimers(); ["customer", "top", "bottom"].forEach(removeAsset); ["height", "weight", "size", "shape", "fit", "chest", "shoulder", "shoulder-wrist"].forEach((id) => { document.getElementById(id).value = ""; }); ["top-scale", "bottom-scale"].forEach((id) => { document.getElementById(id).value = "100"; }); ["top-y", "bottom-y"].forEach((id) => { document.getElementById(id).value = "0"; }); document.getElementById("status-panel").hidden = true; document.getElementById("result-panel").hidden = true; document.getElementById("progress-bar").style.width = "0%"; setText("progress-label", "0% complete"); document.querySelectorAll(".steps li").forEach((step) => step.classList.remove("active")); document.querySelector(".steps li:nth-child(1)").classList.add("active"); });
+updateReview();
